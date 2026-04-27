@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nose Consent Form | Way Out</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Nose piercing consent page">
+      <section class="hero-card form-card">
+        <a class="back-link" href="/Wayout-app/piercings.html">← Back to piercings</a>
+        <p class="eyebrow">nose piercing</p>
+        <h1 class="page-title">consent</h1>
+        <p class="tagline">Upload or view the nose piercing consent form here before continuing.</p>
+
+        <div class="upload-panel">
+          <label class="upload-label" for="consent-upload">Upload consent form</label>
+          <input id="consent-upload" class="file-input" type="file" accept="application/pdf,image/*" />
+          <p class="helper-text">PDFs and images are supported. This preview stays on this device until form storage is added.</p>
+        </div>
+
+        <div id="form-preview" class="form-preview" aria-live="polite">
+          <p class="placeholder-text">No consent form selected yet.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const input = document.querySelector("#consent-upload");
+      const preview = document.querySelector("#form-preview");
+
+      input.addEventListener("change", () => {
+        const file = input.files?.[0];
+        if (!file) {
+          preview.innerHTML = '<p class="placeholder-text">No consent form selected yet.</p>';
+          return;
+        }
+
+        const url = URL.createObjectURL(file);
+        if (file.type === "application/pdf") {
+          preview.innerHTML = `<iframe class="consent-frame" src="${url}" title="Consent form preview"></iframe>`;
+          return;
+        }
+
+        if (file.type.startsWith("image/")) {
+          preview.innerHTML = `<img class="consent-image" src="${url}" alt="Consent form preview" />`;
+          return;
+        }
+
+        preview.innerHTML = '<p class="placeholder-text">That file type is not supported yet.</p>';
+      });
+    </script>
+  </body>
+</html>
