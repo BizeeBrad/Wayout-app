@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consent Form | Way Out</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Piercing consent form page">
+      <section class="hero-card form-card">
+        <a class="back-link" id="back-link" href="/Wayout-app/piercing-form.html">← Back to customer form</a>
+        <p class="eyebrow" id="consent-label">consent form</p>
+        <h1 class="page-title">consent</h1>
+        <p class="tagline">Fill out and save the customer consent details.</p>
+
+        <form class="customer-form" id="consent-form">
+          <label class="form-field">
+            <span>Customer name</span>
+            <input name="customerName" type="text" autocomplete="name" required />
+          </label>
+
+          <label class="form-field">
+            <span>Date of birth</span>
+            <input name="dateOfBirth" type="date" required />
+          </label>
+
+          <label class="form-field">
+            <span>Phone number</span>
+            <input name="phone" type="tel" autocomplete="tel" required />
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+
+          <label class="form-check">
+            <input name="ageConfirm" type="checkbox" required />
+            <span>I confirm the customer is legally able to consent or has guardian approval.</span>
+          </label>
+
+          <label class="form-check">
+            <input name="riskConfirm" type="checkbox" required />
+            <span>I understand piercing risks including swelling, infection, irritation, scarring, and jewelry rejection.</span>
+          </label>
+
+          <label class="form-check">
+            <input name="aftercareConfirm" type="checkbox" required />
+            <span>I agree to follow the aftercare instructions provided by the piercer.</span>
+          </label>
+
+          <label class="form-field">
+            <span>Customer signature</span>
+            <input name="signature" type="text" placeholder="Type full legal name" required />
+          </label>
+
+          <button class="choice-button submit-button" type="submit">Save consent</button>
+        </form>
+
+        <div class="form-output" id="consent-output" hidden></div>
+      </section>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const piercingType = params.get("type") || "piercing";
+      const prettyType = piercingType.charAt(0).toUpperCase() + piercingType.slice(1);
+      const form = document.querySelector("#consent-form");
+      const output = document.querySelector("#consent-output");
+      const label = document.querySelector("#consent-label");
+      const backLink = document.querySelector("#back-link");
+
+      label.textContent = `${prettyType} consent form`;
+      document.title = `${prettyType} Consent Form | Way Out`;
+      backLink.href = `/Wayout-app/piercing-form.html?type=${encodeURIComponent(piercingType)}`;
+
+      const savedCustomer = localStorage.getItem(`wayout-customer-${piercingType}`);
+      if (savedCustomer) {
+        const customer = JSON.parse(savedCustomer);
+        for (const [key, value] of Object.entries(customer)) {
+          if (form.elements[key]) form.elements[key].value = value;
+        }
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.savedAt = new Date().toISOString();
+        data.piercingType = prettyType;
+        localStorage.setItem(`wayout-consent-${piercingType}`, JSON.stringify(data));
+
+        output.hidden = false;
+        output.innerHTML = `
+          <h2>Consent saved</h2>
+          <p><strong>Piercing:</strong> ${prettyType}</p>
+          <p><strong>Name:</strong> ${data.customerName}</p>
+          <p><strong>DOB:</strong> ${data.dateOfBirth}</p>
+          <p><strong>Phone:</strong> ${data.phone}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Signature:</strong> ${data.signature}</p>
+          <p class="helper-text">Saved on this device for now. Cloud/backend storage will be needed for permanent shop records.</p>
+        `;
+      });
+    </script>
+  </body>
+</html>

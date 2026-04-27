@@ -71,9 +71,15 @@
             <input name="totalPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" readonly />
           </label>
 
-          <button class="choice-button submit-button" type="submit">Save info</button>
+          <div class="form-actions">
+            <button class="choice-button submit-button" type="submit">Save info</button>
+            <a class="choice-button choice-button--purple" id="consent-link" href="/Wayout-app/consent-form.html">Consent form</a>
+            <label class="choice-button camera-button" for="photo-upload">Upload picture</label>
+            <input id="photo-upload" class="visually-hidden" name="photo" type="file" accept="image/*" capture="environment" />
+          </div>
         </form>
 
+        <div class="photo-preview" id="photo-preview" hidden></div>
         <div class="form-output" id="form-output" hidden></div>
       </section>
     </main>
@@ -85,9 +91,13 @@
       const label = document.querySelector("#piercing-label");
       const form = document.querySelector("#customer-form");
       const output = document.querySelector("#form-output");
+      const consentLink = document.querySelector("#consent-link");
+      const photoUpload = document.querySelector("#photo-upload");
+      const photoPreview = document.querySelector("#photo-preview");
 
       label.textContent = `${prettyType} piercing form`;
       document.title = `${prettyType} Piercing Form | Way Out`;
+      consentLink.href = `/Wayout-app/consent-form.html?type=${encodeURIComponent(piercingType)}`;
 
       const piercingPriceInput = form.elements.piercingPrice;
       const jewelryPriceInput = form.elements.jewelryPrice;
@@ -101,34 +111,57 @@
         totalPriceInput.value = (piercingPrice + jewelryPrice + aftercarePrice).toFixed(2);
       }
 
+      function saveCustomerInfo() {
+        updateTotalPrice();
+        const data = Object.fromEntries(new FormData(form).entries());
+        localStorage.setItem(`wayout-customer-${piercingType}`, JSON.stringify(data));
+        return data;
+      }
+
       piercingPriceInput.addEventListener("input", updateTotalPrice);
       jewelryPriceInput.addEventListener("input", updateTotalPrice);
       aftercareInput.addEventListener("change", updateTotalPrice);
       updateTotalPrice();
 
+      photoUpload.addEventListener("change", () => {
+        const file = photoUpload.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          localStorage.setItem(`wayout-photo-${piercingType}`, reader.result);
+          photoPreview.hidden = false;
+          photoPreview.innerHTML = `
+            <h2>Saved picture</h2>
+            <img class="consent-image" src="${reader.result}" alt="Uploaded customer picture" />
+            <p class="helper-text">Saved on this device for now. Cloud saving will come when backend storage is added.</p>
+          `;
+        });
+        reader.readAsDataURL(file);
+      });
+
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        updateTotalPrice();
-        const data = new FormData(form);
-        const piercingPrice = Number(data.get("piercingPrice") || 0).toFixed(2);
-        const jewelryPrice = Number(data.get("jewelryPrice") || 0).toFixed(2);
-        const aftercare = data.get("aftercare") === "yes" ? "Yes (+$20)" : "No";
-        const totalPrice = Number(data.get("totalPrice") || 0).toFixed(2);
+        const data = saveCustomerInfo();
+        const piercingPrice = Number(data.piercingPrice || 0).toFixed(2);
+        const jewelryPrice = Number(data.jewelryPrice || 0).toFixed(2);
+        const aftercare = data.aftercare === "yes" ? "Yes (+$20)" : "No";
+        const totalPrice = Number(data.totalPrice || 0).toFixed(2);
 
         output.hidden = false;
         output.innerHTML = `
-          <h2>Entered info</h2>
+          <h2>Saved info</h2>
           <p><strong>Piercing:</strong> ${prettyType}</p>
-          <p><strong>Name:</strong> ${data.get("customerName")}</p>
-          <p><strong>Piercer:</strong> ${data.get("piercerName")}</p>
-          <p><strong>Phone:</strong> ${data.get("phone")}</p>
-          <p><strong>Email:</strong> ${data.get("email")}</p>
-          <p><strong>Jewelry:</strong> ${data.get("jewelry")}</p>
+          <p><strong>Name:</strong> ${data.customerName}</p>
+          <p><strong>Piercer:</strong> ${data.piercerName}</p>
+          <p><strong>Phone:</strong> ${data.phone}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Jewelry:</strong> ${data.jewelry}</p>
           <p><strong>Price of piercing:</strong> $${piercingPrice}</p>
           <p><strong>Price of jewelry:</strong> $${jewelryPrice}</p>
           <p><strong>Aftercare:</strong> ${aftercare}</p>
           <p><strong>Total price:</strong> $${totalPrice}</p>
-          <p class="helper-text">This is a temporary on-screen record only. Permanent saving will come later when we add form storage.</p>
+          <p class="helper-text">Saved on this device for now. Permanent saving will come later when backend storage is added.</p>
         `;
       });
     </script>
