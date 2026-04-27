@@ -21,6 +21,11 @@
           </label>
 
           <label class="form-field">
+            <span>Piercer's name</span>
+            <input name="piercerName" type="text" autocomplete="name" required />
+          </label>
+
+          <label class="form-field">
             <span>Phone number</span>
             <input name="phone" type="tel" autocomplete="tel" required />
           </label>
@@ -68,6 +73,7 @@
           <h2>Entered info</h2>
           <p><strong>Piercing:</strong> ${prettyType}</p>
           <p><strong>Name:</strong> ${data.get("customerName")}</p>
+          <p><strong>Piercer:</strong> ${data.get("piercerName")}</p>
           <p><strong>Phone:</strong> ${data.get("phone")}</p>
           <p><strong>Email:</strong> ${data.get("email")}</p>
           <p><strong>Jewelry:</strong> ${data.get("jewelry")}</p>
