@@ -102,9 +102,13 @@ h1 {
   background: linear-gradient(135deg, rgba(0, 245, 255, 0.18), rgba(8, 8, 13, 0.88));
   box-shadow: 0 0 22px rgba(0, 245, 255, 0.18);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font: inherit;
   font-weight: 900;
   letter-spacing: 0.08em;
+  text-decoration: none;
   text-transform: uppercase;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
@@ -123,6 +127,38 @@ h1 {
   box-shadow:
     0 0 28px rgba(0, 245, 255, 0.28),
     0 0 38px rgba(143, 56, 255, 0.25);
+}
+
+.page-title {
+  font-size: clamp(3rem, 11vw, 6.4rem);
+}
+
+.back-link {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--aqua);
+  outline: none;
+}
+
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 680px) {
+  .link-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 560px) {
