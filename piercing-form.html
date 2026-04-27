@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piercing Form | Way Out</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Piercing customer form page">
+      <section class="hero-card form-card">
+        <a class="back-link" href="/Wayout-app/piercings.html">← Back to piercings</a>
+        <p class="eyebrow" id="piercing-label">piercing form</p>
+        <h1 class="page-title">customer</h1>
+        <p class="tagline">Enter the customer and jewelry details below.</p>
+
+        <form class="customer-form" id="customer-form">
+          <label class="form-field">
+            <span>Customer name</span>
+            <input name="customerName" type="text" autocomplete="name" required />
+          </label>
+
+          <label class="form-field">
+            <span>Phone number</span>
+            <input name="phone" type="tel" autocomplete="tel" required />
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+
+          <label class="form-field">
+            <span>Type of jewelry</span>
+            <input name="jewelry" type="text" placeholder="Example: hoop, stud, barbell" required />
+          </label>
+
+          <label class="form-field">
+            <span>Price</span>
+            <input name="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required />
+          </label>
+
+          <button class="choice-button submit-button" type="submit">Save info</button>
+        </form>
+
+        <div class="form-output" id="form-output" hidden></div>
+      </section>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const piercingType = params.get("type") || "piercing";
+      const prettyType = piercingType.charAt(0).toUpperCase() + piercingType.slice(1);
+      const label = document.querySelector("#piercing-label");
+      const form = document.querySelector("#customer-form");
+      const output = document.querySelector("#form-output");
+
+      label.textContent = `${prettyType} piercing form`;
+      document.title = `${prettyType} Piercing Form | Way Out`;
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const price = Number(data.get("price") || 0).toFixed(2);
+
+        output.hidden = false;
+        output.innerHTML = `
+          <h2>Entered info</h2>
+          <p><strong>Piercing:</strong> ${prettyType}</p>
+          <p><strong>Name:</strong> ${data.get("customerName")}</p>
+          <p><strong>Phone:</strong> ${data.get("phone")}</p>
+          <p><strong>Email:</strong> ${data.get("email")}</p>
+          <p><strong>Jewelry:</strong> ${data.get("jewelry")}</p>
+          <p><strong>Price:</strong> $${price}</p>
+          <p class="helper-text">This is a temporary on-screen record only. Permanent saving will come later when we add form storage.</p>
+        `;
+      });
+    </script>
+  </body>
+</html>
