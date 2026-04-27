@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Information | Way Out</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Customer information page">
+      <section class="hero-card form-card">
+        <a class="back-link" href="/Wayout-app/">← Back</a>
+        <p class="eyebrow">piercing intake</p>
+        <h1 class="page-title">customer</h1>
+        <p class="tagline">Enter customer information, consent confirmations, signature, and photo.</p>
+
+        <form class="customer-form" id="customer-info-form">
+          <label class="form-field">
+            <span>Customer name</span>
+            <input name="customerName" type="text" autocomplete="name" required />
+          </label>
+
+          <label class="form-field">
+            <span>Phone number</span>
+            <input name="phone" type="tel" autocomplete="tel" required />
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+
+          <label class="form-check">
+            <input name="ageConfirm" type="checkbox" required />
+            <span>I confirm the customer is legally able to consent or has guardian approval.</span>
+          </label>
+
+          <label class="form-check">
+            <input name="riskConfirm" type="checkbox" required />
+            <span>I understand piercing risks including swelling, infection, irritation, scarring, and jewelry rejection.</span>
+          </label>
+
+          <label class="form-check">
+            <input name="aftercareConfirm" type="checkbox" required />
+            <span>I agree to follow the aftercare instructions provided by the piercer.</span>
+          </label>
+
+          <label class="form-field">
+            <span>Customer signature</span>
+            <input name="signature" type="text" placeholder="Type full legal name" required />
+          </label>
+
+          <div class="form-actions">
+            <label class="choice-button camera-button" for="photo-upload">Picture</label>
+            <input id="photo-upload" class="visually-hidden" name="photo" type="file" accept="image/*" capture="environment" />
+            <button class="choice-button choice-button--purple submit-button" type="submit">Save customer</button>
+          </div>
+        </form>
+
+        <div class="photo-preview" id="photo-preview" hidden></div>
+        <div class="form-output" id="form-output" hidden></div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.querySelector("#customer-info-form");
+      const output = document.querySelector("#form-output");
+      const photoUpload = document.querySelector("#photo-upload");
+      const photoPreview = document.querySelector("#photo-preview");
+      const storageKey = "wayout-customer-info";
+      const photoKey = "wayout-customer-picture";
+
+      photoUpload.addEventListener("change", () => {
+        const file = photoUpload.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          localStorage.setItem(photoKey, reader.result);
+          photoPreview.hidden = false;
+          photoPreview.innerHTML = `
+            <h2>Saved picture</h2>
+            <img class="consent-image" src="${reader.result}" alt="Uploaded customer picture" />
+            <p class="helper-text">Saved on this device for now. Cloud saving will come when backend storage is added.</p>
+          `;
+        });
+        reader.readAsDataURL(file);
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.savedAt = new Date().toISOString();
+        localStorage.setItem(storageKey, JSON.stringify(data));
+
+        output.hidden = false;
+        output.innerHTML = `
+          <h2>Saved customer info</h2>
+          <p><strong>Name:</strong> ${data.customerName}</p>
+          <p><strong>Phone:</strong> ${data.phone}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Signature:</strong> ${data.signature}</p>
+          <p><strong>Consent:</strong> Checked</p>
+          <p class="helper-text">Saved on this device for now. Permanent shop records will need backend storage later.</p>
+        `;
+      });
+    </script>
+  </body>
+</html>
