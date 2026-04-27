@@ -239,7 +239,8 @@ h1 {
   text-transform: uppercase;
 }
 
-.form-field input {
+.form-field input,
+.form-field select {
   width: 100%;
   padding: 0.95rem 1rem;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -250,7 +251,13 @@ h1 {
   text-transform: none;
 }
 
-.form-field input:focus {
+.form-field select option {
+  color: #050509;
+  background: #ffffff;
+}
+
+.form-field input:focus,
+.form-field select:focus {
   outline: none;
   border-color: rgba(0, 245, 255, 0.8);
   box-shadow: 0 0 20px rgba(0, 245, 255, 0.16);
