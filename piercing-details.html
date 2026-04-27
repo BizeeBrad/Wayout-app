@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piercing Details | Way Out</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Piercing details page">
+      <section class="hero-card form-card">
+        <a class="back-link" href="/Wayout-app/customer-info.html">← Back to customer</a>
+        <p class="eyebrow">piercing details</p>
+        <h1 class="page-title">details</h1>
+        <p class="tagline">Choose the piercer, piercing, jewelry, price, and aftercare.</p>
+
+        <form class="customer-form" id="piercing-details-form">
+          <label class="form-field">
+            <span>Piercer's name</span>
+            <select name="piercerName" required>
+              <option value="">Select piercer</option>
+              <option value="Bryanna">Bryanna</option>
+              <option value="Omarni">Omarni</option>
+              <option value="Stet">Stet</option>
+              <option value="Kiersten">Kiersten</option>
+              <option value="Naila">Naila</option>
+              <option value="Ari">Ari</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Piercing</span>
+            <select name="piercingType" required>
+              <option value="">Select piercing</option>
+              <option value="Nose">Nose</option>
+              <option value="Navel">Navel</option>
+              <option value="Helix">Helix</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Jewelry</span>
+            <input name="jewelry" type="text" placeholder="Example: hoop, stud, barbell" required />
+          </label>
+
+          <label class="form-field">
+            <span>Jewelry price</span>
+            <input name="jewelryPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required />
+          </label>
+
+          <label class="form-field">
+            <span>Aftercare</span>
+            <select name="aftercare" required>
+              <option value="no">No</option>
+              <option value="yes">Yes (+$20)</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Total add-ons</span>
+            <input name="totalAddOns" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" readonly />
+          </label>
+
+          <button class="choice-button choice-button--purple submit-button" type="submit">Save details</button>
+        </form>
+
+        <div class="form-output" id="form-output" hidden></div>
+      </section>
+    </main>
+
+    <script>
+      const form = document.querySelector("#piercing-details-form");
+      const output = document.querySelector("#form-output");
+      const jewelryPriceInput = form.elements.jewelryPrice;
+      const aftercareInput = form.elements.aftercare;
+      const totalAddOnsInput = form.elements.totalAddOns;
+      const storageKey = "wayout-piercing-details";
+
+      function updateTotal() {
+        const jewelryPrice = Number(jewelryPriceInput.value || 0);
+        const aftercarePrice = aftercareInput.value === "yes" ? 20 : 0;
+        totalAddOnsInput.value = (jewelryPrice + aftercarePrice).toFixed(2);
+      }
+
+      jewelryPriceInput.addEventListener("input", updateTotal);
+      aftercareInput.addEventListener("change", updateTotal);
+      updateTotal();
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        updateTotal();
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.savedAt = new Date().toISOString();
+        localStorage.setItem(storageKey, JSON.stringify(data));
+
+        output.hidden = false;
+        output.innerHTML = `
+          <h2>Saved piercing details</h2>
+          <p><strong>Piercer:</strong> ${data.piercerName}</p>
+          <p><strong>Piercing:</strong> ${data.piercingType}</p>
+          <p><strong>Jewelry:</strong> ${data.jewelry}</p>
+          <p><strong>Jewelry price:</strong> $${Number(data.jewelryPrice || 0).toFixed(2)}</p>
+          <p><strong>Aftercare:</strong> ${data.aftercare === "yes" ? "Yes (+$20)" : "No"}</p>
+          <p><strong>Total add-ons:</strong> $${Number(data.totalAddOns || 0).toFixed(2)}</p>
+          <p class="helper-text">Saved on this device for now. Permanent shop records will need backend storage later.</p>
+        `;
+      });
+    </script>
+  </body>
+</html>

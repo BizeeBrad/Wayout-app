@@ -92,17 +92,7 @@
         const data = Object.fromEntries(new FormData(form).entries());
         data.savedAt = new Date().toISOString();
         localStorage.setItem(storageKey, JSON.stringify(data));
-
-        output.hidden = false;
-        output.innerHTML = `
-          <h2>Saved customer info</h2>
-          <p><strong>Name:</strong> ${data.customerName}</p>
-          <p><strong>Phone:</strong> ${data.phone}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Signature:</strong> ${data.signature}</p>
-          <p><strong>Consent:</strong> Checked</p>
-          <p class="helper-text">Saved on this device for now. Permanent shop records will need backend storage later.</p>
-        `;
+        window.location.href = "/Wayout-app/piercing-details.html";
       });
     </script>
   </body>
