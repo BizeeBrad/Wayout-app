@@ -328,15 +328,77 @@ h1 {
 }
 
 .photo-preview h2,
-.form-output h2 {
-  margin: 0 0 1rem;
+.form-output h2,
+.record-detail h2 {
+  margin: 1rem 0 1rem;
   color: var(--aqua);
   text-transform: uppercase;
 }
 
+.photo-preview h2:first-child,
+.form-output h2:first-child,
+.record-detail h2:first-child {
+  margin-top: 0;
+}
+
 .photo-preview p,
-.form-output p {
+.form-output p,
+.record-detail p {
   margin: 0.55rem 0;
+}
+
+.records-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 1rem;
+  margin-top: 1.25rem;
+  text-align: left;
+}
+
+.records-list,
+.record-detail {
+  min-height: 260px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.record-button {
+  width: 100%;
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(0, 245, 255, 0.28);
+  border-radius: 16px;
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.record-button:hover,
+.record-button:focus-visible {
+  outline: none;
+  border-color: rgba(0, 245, 255, 0.85);
+}
+
+.record-button span {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.record-photo {
+  margin-top: 0.75rem;
+  border-radius: 16px;
+}
+
+@media (max-width: 760px) {
+  .records-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 680px) {

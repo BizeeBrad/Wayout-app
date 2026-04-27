@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Lookup | Way Out</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Customer lookup page">
+      <section class="hero-card form-card">
+        <a class="back-link" href="/Wayout-app/">← Back</a>
+        <p class="eyebrow">customer records</p>
+        <h1 class="page-title">lookup</h1>
+        <p class="tagline">Search previous customers and view their saved intake and piercing forms.</p>
+
+        <label class="form-field">
+          <span>Search customers</span>
+          <input id="customer-search" type="search" placeholder="Search by name, phone, or email" autocomplete="off" />
+        </label>
+
+        <div class="records-layout">
+          <div class="records-list" id="records-list" aria-label="Saved customers"></div>
+          <div class="record-detail" id="record-detail">
+            <p class="placeholder-text">Select a customer to view their intake form.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const recordsList = document.querySelector("#records-list");
+      const recordDetail = document.querySelector("#record-detail");
+      const searchInput = document.querySelector("#customer-search");
+      const recordsKey = "wayout-customers";
+
+      function getRecords() {
+        return JSON.parse(localStorage.getItem(recordsKey) || "[]");
+      }
+
+      function money(value) {
+        return Number(value || 0).toFixed(2);
+      }
+
+      function formatDate(value) {
+        if (!value) return "Not saved";
+        return new Date(value).toLocaleString();
+      }
+
+      function renderList() {
+        const query = searchInput.value.trim().toLowerCase();
+        const records = getRecords().filter((record) => {
+          const text = `${record.customerName || ""} ${record.phone || ""} ${record.email || ""}`.toLowerCase();
+          return text.includes(query);
+        });
+
+        if (!records.length) {
+          recordsList.innerHTML = '<p class="placeholder-text">No saved customers found on this device.</p>';
+          return;
+        }
+
+        recordsList.innerHTML = records.map((record) => `
+          <button class="record-button" type="button" data-id="${record.id}">
+            <strong>${record.customerName || "Unnamed customer"}</strong>
+            <span>${record.phone || "No phone"}</span>
+            <span>${record.email || "No email"}</span>
+          </button>
+        `).join("");
+      }
+
+      function renderDetail(record) {
+        const details = record.piercingDetails || {};
+        const photo = record.photo ? `<img class="consent-image record-photo" src="${record.photo}" alt="Saved customer picture" />` : '<p class="helper-text">No picture saved.</p>';
+
+        recordDetail.innerHTML = `
+          <h2>${record.customerName || "Customer"}</h2>
+          <p><strong>Saved:</strong> ${formatDate(record.savedAt)}</p>
+          <p><strong>Phone:</strong> ${record.phone || ""}</p>
+          <p><strong>Email:</strong> ${record.email || ""}</p>
+          <p><strong>Signature:</strong> ${record.signature || ""}</p>
+          <p><strong>Consent:</strong> ${record.ageConfirm && record.riskConfirm && record.aftercareConfirm ? "Checked" : "Incomplete"}</p>
+
+          <h2>Intake form</h2>
+          <p><strong>Customer name:</strong> ${record.customerName || ""}</p>
+          <p><strong>Phone:</strong> ${record.phone || ""}</p>
+          <p><strong>Email:</strong> ${record.email || ""}</p>
+          <p><strong>Signature:</strong> ${record.signature || ""}</p>
+
+          <h2>Piercing form</h2>
+          <p><strong>Piercer:</strong> ${details.piercerName || "Not saved"}</p>
+          <p><strong>Piercing:</strong> ${details.piercingType || "Not saved"}</p>
+          <p><strong>Jewelry:</strong> ${details.jewelry || "Not saved"}</p>
+          <p><strong>Jewelry price:</strong> $${money(details.jewelryPrice)}</p>
+          <p><strong>Aftercare:</strong> ${details.aftercare === "yes" ? "Yes (+$20)" : details.aftercare === "no" ? "No" : "Not saved"}</p>
+          <p><strong>Total add-ons:</strong> $${money(details.totalAddOns)}</p>
+
+          <h2>Picture</h2>
+          ${photo}
+        `;
+      }
+
+      recordsList.addEventListener("click", (event) => {
+        const button = event.target.closest(".record-button");
+        if (!button) return;
+        const record = getRecords().find((item) => item.id === button.dataset.id);
+        if (record) renderDetail(record);
+      });
+
+      searchInput.addEventListener("input", renderList);
+      renderList();
+    </script>
+  </body>
+</html>
