@@ -49,8 +49,26 @@
           </label>
 
           <label class="form-field">
-            <span>Price</span>
-            <input name="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required />
+            <span>Price of piercing</span>
+            <input name="piercingPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required />
+          </label>
+
+          <label class="form-field">
+            <span>Price of jewelry</span>
+            <input name="jewelryPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" required />
+          </label>
+
+          <label class="form-field">
+            <span>Aftercare</span>
+            <select name="aftercare" required>
+              <option value="no">No</option>
+              <option value="yes">Yes (+$20)</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Total price</span>
+            <input name="totalPrice" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" readonly />
           </label>
 
           <button class="choice-button submit-button" type="submit">Save info</button>
@@ -71,10 +89,31 @@
       label.textContent = `${prettyType} piercing form`;
       document.title = `${prettyType} Piercing Form | Way Out`;
 
+      const piercingPriceInput = form.elements.piercingPrice;
+      const jewelryPriceInput = form.elements.jewelryPrice;
+      const aftercareInput = form.elements.aftercare;
+      const totalPriceInput = form.elements.totalPrice;
+
+      function updateTotalPrice() {
+        const piercingPrice = Number(piercingPriceInput.value || 0);
+        const jewelryPrice = Number(jewelryPriceInput.value || 0);
+        const aftercarePrice = aftercareInput.value === "yes" ? 20 : 0;
+        totalPriceInput.value = (piercingPrice + jewelryPrice + aftercarePrice).toFixed(2);
+      }
+
+      piercingPriceInput.addEventListener("input", updateTotalPrice);
+      jewelryPriceInput.addEventListener("input", updateTotalPrice);
+      aftercareInput.addEventListener("change", updateTotalPrice);
+      updateTotalPrice();
+
       form.addEventListener("submit", (event) => {
         event.preventDefault();
+        updateTotalPrice();
         const data = new FormData(form);
-        const price = Number(data.get("price") || 0).toFixed(2);
+        const piercingPrice = Number(data.get("piercingPrice") || 0).toFixed(2);
+        const jewelryPrice = Number(data.get("jewelryPrice") || 0).toFixed(2);
+        const aftercare = data.get("aftercare") === "yes" ? "Yes (+$20)" : "No";
+        const totalPrice = Number(data.get("totalPrice") || 0).toFixed(2);
 
         output.hidden = false;
         output.innerHTML = `
@@ -85,7 +124,10 @@
           <p><strong>Phone:</strong> ${data.get("phone")}</p>
           <p><strong>Email:</strong> ${data.get("email")}</p>
           <p><strong>Jewelry:</strong> ${data.get("jewelry")}</p>
-          <p><strong>Price:</strong> $${price}</p>
+          <p><strong>Price of piercing:</strong> $${piercingPrice}</p>
+          <p><strong>Price of jewelry:</strong> $${jewelryPrice}</p>
+          <p><strong>Aftercare:</strong> ${aftercare}</p>
+          <p><strong>Total price:</strong> $${totalPrice}</p>
           <p class="helper-text">This is a temporary on-screen record only. Permanent saving will come later when we add form storage.</p>
         `;
       });
